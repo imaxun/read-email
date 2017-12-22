@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!-- 第一种方式：加载一个properties文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:jdbc.properties"/>
+    </bean>
+
+
+    <!-- 采用阿里云配置数据源 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="initialSize" value="10"/>
+        <!--  连接池支持的最大连接数-->
+        <property name="maxActive" value="100"/>
+        <!-- 连接池中最多可空闲maxIdle个连接  -->
+        <property name="maxIdle" value="50"/>
+        <!--  连接池中最少空闲maxIdle个连接  -->
+        <property name="minIdle" value="20"/>
+        <!--  连接池中连接用完时,新的请求等待时间,毫秒  -->
+        <property name="maxWait" value="60000"/>
+        <!-- testWhileIdle -->
+        <property name="testWhileIdle" value="true"/>
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="minEvictableIdleTimeMillis" value="1800000"/>
+
+        <!-- 自动清除无用连接 -->
+        <!-- 配置removeAbandoned对性能会有一些影响，建议怀疑存在泄漏之后再打开。 -->
+        <property name="removeAbandoned" value="true"/>
+        <property name="removeAbandonedTimeout" value="1800"/>
+        <property name="logAbandoned" value="true"/>
+
+        <property name="filters" value="stat"/>
+    </bean>
+
+    <!-- mybatis和spring完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:mapping/*.xml"/>
+        <property name="typeAliasesPackage" value="com.offer.bean"/>
+        <property name="configLocation" value="classpath:mybatis/configuration.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.offer.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="properties">
+            <value>
+                mappers=tk.mybatis.mapper.common.Mapper
+                IDENTITY=MYSQL
+                notEmpty=true
+            </value>
+        </property>
+    </bean>
+</beans>
