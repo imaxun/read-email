@@ -19,14 +19,14 @@ import java.util.Properties;
  * @Date 2017/12/19 17:26
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/spring/*.xml")
+@ContextConfiguration(locations = {"/spring/*.xml"})
 public class TestRead {
     @Resource
     private MailInfoService mailInfoService;
     @Test
     public void test() throws MessagingException {
 //        // 准备连接服务器的会话信息
-//       Result result  =  mailInfoService.readMail(new Integer(3));
-//       System.out.println(result);
+        Result result  =  mailInfoService.readMail(new Integer(3));
+        System.out.println(result);
     }
 }
