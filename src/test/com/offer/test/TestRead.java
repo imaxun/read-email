@@ -1,5 +1,6 @@
 package com.offer.test;
 
+import com.offer.bean.ConfigInfo;
 import com.offer.bean.EmailAuthenticator;
 import com.offer.service.MailInfoService;
 import com.offer.util.Result;
@@ -22,11 +23,10 @@ import java.util.Properties;
 @ContextConfiguration(locations = {"/spring/*.xml"})
 public class TestRead {
     @Resource
-    private MailInfoService mailInfoService;
+    private ConfigInfo configInfo;
     @Test
     public void test() throws MessagingException {
 //        // 准备连接服务器的会话信息
-        Result result  =  mailInfoService.readMail(new Integer(3));
-        System.out.println(result);
+        System.out.println(configInfo.getEuser());
     }
 }

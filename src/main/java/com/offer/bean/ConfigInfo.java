@@ -1,28 +1,31 @@
 package com.offer.bean;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 
 /**
  * @Author lizhen [v_zhennli@tencent.com]
  * @Date 2017/12/19 15:33
  */
-public class User implements Serializable{
-    private Integer userId;
+@Component
+public class ConfigInfo implements Serializable{
+    @Value("#{configProperties['user.name']}")
     private String userName;
+    @Value("#{configProperties['email.phone']}")
     private String phone; // 手机号
-    private Integer status; //状态 1：通知成功，0通知失败
+    @Value("#{configProperties['email.protocol']}")
     private String protocol; // 邮件的协议
+    @Value("#{configProperties['email.host']}")
     private String host;//服务地址
+    @Value("#{configProperties['email.username']}")
     private String euser;//邮箱账户
+    @Value("#{configProperties['email.password']}")
     private String epassword;//邮箱密码
+    @Value("#{configProperties['email.port']}")
     private String port;//端口
-    public Integer getUserId() {
-        return userId;
-    }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
 
     public String getUserName() {
         return userName;
@@ -40,13 +43,6 @@ public class User implements Serializable{
         this.phone = phone;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     public String getProtocol() {
         return protocol;

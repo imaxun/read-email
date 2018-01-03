@@ -1,8 +1,7 @@
 package com.offer.service.impl;
 
+import com.offer.bean.ConfigInfo;
 import com.offer.bean.EmailInfo;
-import com.offer.bean.User;
-import com.offer.mapper.UserMapper;
 import com.offer.service.MailInfoService;
 import com.offer.util.Constant;
 import com.offer.util.Result;
@@ -25,29 +24,28 @@ import java.util.Properties;
 @Service("mailInfoService")
 public class MailInfoServiceImpl implements MailInfoService {
     @Autowired
-    private UserMapper userMapper;
+    private ConfigInfo configInfo;
 
     /**
      * 读取邮件，目前只是作为测试使用，后续优化需要接入redis,
      * @param userId
      * @return
      */
-    public Result readMail(Integer userId) {
+    public Result readMail() {
         Result result = new ResultSupport();
         Folder  folder = null;
         Store  store = null;
         try {
-            User user = userMapper.findById(userId);
             //属性封装
             Properties prop = System.getProperties();
-            prop.put("mail.store.protocol", user.getProtocol());
-            prop.put("mail.imap.host", user.getHost());
-            prop.setProperty("mail.imap.port", user.getPort());
+            prop.put("mail.store.protocol", configInfo.getProtocol());
+            prop.put("mail.imap.host", configInfo.getHost());
+            prop.setProperty("mail.imap.port", configInfo.getPort());
 
             Session session = Session.getInstance(prop);//建立会话
             //使用  imap 会话机制，连接服务器
-            store =  session.getStore(user.getProtocol());
-            store.connect(user.getEuser(),user.getEpassword());
+            store =  session.getStore(configInfo.getProtocol());
+            store.connect(configInfo.getEuser(),configInfo.getEpassword());
             folder  =  store.getFolder("INBOX");//收件箱
             folder.open(Folder.READ_WRITE);
             // 以只读方式打开邮件夹
