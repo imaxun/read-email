@@ -24,9 +24,12 @@ import java.util.Properties;
 public class TestRead {
     @Resource
     private ConfigInfo configInfo;
+
+    @Resource
+    private MailInfoService mailInfoService;
     @Test
     public void test() throws MessagingException {
 //        // 准备连接服务器的会话信息
-        System.out.println(configInfo.getEuser());
+        mailInfoService.readMail();
     }
 }
