@@ -30,6 +30,7 @@ public class TestRead {
     @Test
     public void test() throws MessagingException {
 //        // 准备连接服务器的会话信息
-        mailInfoService.readMail();
+        Result result = mailInfoService.readMail();
+        System.out.println(result.getModel());
     }
 }

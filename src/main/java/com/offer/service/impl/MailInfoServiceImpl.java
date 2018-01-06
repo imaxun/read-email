@@ -9,6 +9,7 @@ import com.offer.util.ResultSupport;
 import com.offer.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.offer.util.model.commLog;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -22,13 +23,13 @@ import java.util.Properties;
  * @Date 2017/12/19 15:46
  */
 @Service("mailInfoService")
-public class MailInfoServiceImpl implements MailInfoService {
+public class MailInfoServiceImpl implements MailInfoService,commLog{
     @Autowired
     private ConfigInfo configInfo;
 
     /**
      * 读取邮件，目前只是作为测试使用，后续优化需要接入redis,
-     * @param userId
+     * @param
      * @return
      */
     public Result readMail() {
@@ -58,7 +59,7 @@ public class MailInfoServiceImpl implements MailInfoService {
             EmailInfo emailInfo= parseMessage(message);
             result = new ResultSupport("200","读取成功",emailInfo);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("邮件读取异常："+e.getMessage());
             result = ResultUtil.error("500","读取失败");
         }finally {
             //释放资源
@@ -88,18 +89,20 @@ public class MailInfoServiceImpl implements MailInfoService {
             throw new MessagingException("未找到要解析的邮件!");
         //存储邮件信息
         EmailInfo emaininfo =null;
+        StringBuffer sb = new StringBuffer();
         for (Message message : messages) {
-            MimeMessage msg = (MimeMessage) message;
-            msg.setFlag(Flags.Flag.SEEN,true);
-            //存储邮件信息
-            emaininfo = new EmailInfo();
-            emaininfo.setCode(msg.getMessageID());
-            InternetAddress address = getFrom(msg);
-            emaininfo.setSender(address.getPersonal()+"<" + address.getAddress() + ">");
-            emaininfo.setTitle(msg.getSubject());//转码后的标题
-            emaininfo.setReceiver(getReceiveAddress(msg, null));//收件人
-            emaininfo.setAccepttime(msg.getSentDate());//收件日期
-            emaininfo.setCheckstatus(Constant.CHECK_STATUS_NO);
+                MimeMessage msg = (MimeMessage) message;
+                msg.setFlag(Flags.Flag.SEEN,true);
+                //存储邮件信息
+                emaininfo = new EmailInfo();
+                emaininfo.setCode(msg.getMessageID());
+                InternetAddress address = getFrom(msg);
+                emaininfo.setSender(address.getPersonal()+"<" + address.getAddress() + ">");
+                emaininfo.setTitle(msg.getSubject());//转码后的标题
+                emaininfo.setReceiver(getReceiveAddress(msg, null));//收件人
+                emaininfo.setAccepttime(msg.getSentDate());//收件日期
+                emaininfo.setCheckstatus(Constant.CHECK_STATUS_NO);
+                emaininfo.setTest(getConstant(msg));
         }
         return emaininfo;
     }
@@ -146,5 +149,21 @@ public class MailInfoServiceImpl implements MailInfoService {
         receiveAddress.deleteCharAt(receiveAddress.length()-1); //删除最后一个逗号
 
         return receiveAddress.toString();
+    }
+    public String getConstant(MimeMessage message) throws MessagingException, IOException {
+        StringBuffer sb = new StringBuffer();
+        if(message.isMimeType("multipart/alternative")){
+            Multipart mp = (Multipart)message.getContent();
+            int count = mp.getCount();    // 部件个数
+            for(int i=0; i<count; i++) {
+                // 单个部件注意：单个部件有可能又为一个Multipart，层层嵌套
+                BodyPart part = mp.getBodyPart(i);
+                String type = part.getContentType().split(";")[0];
+                if(type.equals("text/plain")) {    // 纯文本
+                    sb.append(part.getContent());
+                }
+            }
+        }
+        return sb.toString();
     }
 }

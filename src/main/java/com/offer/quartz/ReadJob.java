@@ -1,9 +1,9 @@
 package com.offer.quartz;
 
-import com.offer.util.UtilDate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import java.util.Date;
+import com.offer.service.MailInfoService;
+import com.offer.util.JacksonUtil;
+import com.offer.util.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @Author lizhen [v_zhennli@tencent.com]
@@ -11,8 +11,12 @@ import java.util.Date;
  * 定时读取邮件
  */
 public class ReadJob {
+    @Autowired
+    private MailInfoService mailInfoService;
         public void taskCycle(){
-            //模拟读取邮件
-            System.out.println("现在是北京时间："+ UtilDate.getDate(new Date())+"使用SpringMVC框架配置定时任务读取邮件中.........");
+            Result result = mailInfoService.readMail();
+            String str = JacksonUtil.bean2Json(result.getModel());
+            System.out.println(str);
+            //后续接入智能语音通知
         }
 }

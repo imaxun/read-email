@@ -14,6 +14,7 @@ public class EmailInfo implements Serializable{
     private String receiver;//收件人
     private Date accepttime;//收件日期
     private Integer checkstatus;//状态
+    private String test;//邮件内容
 
     public String getCode() {
         return code;
@@ -61,5 +62,13 @@ public class EmailInfo implements Serializable{
 
     public void setCheckstatus(Integer checkstatus) {
         this.checkstatus = checkstatus;
+    }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
     }
 }

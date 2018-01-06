@@ -5,5 +5,5 @@
 	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
     <import resource="redis-context.xml"/>
     <import resource="spring-property.xml"/>
-    <!--<import resource="spring-quartz.xml"/>-->
+    <import resource="spring-quartz.xml"/>
 </beans>
