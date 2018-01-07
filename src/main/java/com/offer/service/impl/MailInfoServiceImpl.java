@@ -7,6 +7,7 @@ import com.offer.util.Constant;
 import com.offer.util.Result;
 import com.offer.util.ResultSupport;
 import com.offer.util.ResultUtil;
+import com.sun.mail.imap.IMAPMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.offer.util.model.commLog;
@@ -16,6 +17,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -56,23 +59,13 @@ public class MailInfoServiceImpl implements MailInfoService,commLog{
             int count = numberOfTotal-numberOfUnread+1;
             Message[] message = folder.getMessages(count,numberOfTotal);
             //解析邮件
-            EmailInfo emailInfo= parseMessage(message);
-            result = new ResultSupport("200","读取成功",emailInfo);
+            List<EmailInfo> emailInfos = parseMessage(message);
+            result = new ResultSupport("200","读取成功",emailInfos);
+            if (folder != null) folder.close(true);
+            if (store != null) store.close();
         } catch (Exception e) {
             logger.error("邮件读取异常："+e.getMessage());
-            result = ResultUtil.error("500","读取失败");
-        }finally {
-            //释放资源
-            if (folder != null) try {
-                folder.close(true);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-            if (store != null) try {
-                store.close();
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
+            result = ResultUtil.error("500","读取失败："+e.getMessage());
         }
         return  result;
     }
@@ -84,10 +77,11 @@ public class MailInfoServiceImpl implements MailInfoService,commLog{
      * @throws MessagingException
      * @throws IOException
      */
-    public EmailInfo parseMessage(Message ... messages) throws MessagingException, IOException {
+    public List<EmailInfo> parseMessage(Message ... messages) throws MessagingException, IOException {
         if (messages == null || messages.length < 1)
             throw new MessagingException("未找到要解析的邮件!");
         //存储邮件信息
+        List<EmailInfo> emailInfoList = new ArrayList<EmailInfo>();
         EmailInfo emaininfo =null;
         StringBuffer sb = new StringBuffer();
         for (Message message : messages) {
@@ -102,9 +96,10 @@ public class MailInfoServiceImpl implements MailInfoService,commLog{
                 emaininfo.setReceiver(getReceiveAddress(msg, null));//收件人
                 emaininfo.setAccepttime(msg.getSentDate());//收件日期
                 emaininfo.setCheckstatus(Constant.CHECK_STATUS_NO);
-                emaininfo.setTest(getConstant(msg));
+                emaininfo.setTest(msg.getContent().toString());
+                emailInfoList.add(emaininfo);
         }
-        return emaininfo;
+        return emailInfoList;
     }
 
     /**
@@ -151,8 +146,7 @@ public class MailInfoServiceImpl implements MailInfoService,commLog{
         return receiveAddress.toString();
     }
     public String getConstant(MimeMessage message) throws MessagingException, IOException {
-        StringBuffer sb = new StringBuffer();
-        if(message.isMimeType("multipart/alternative")){
+            StringBuffer sb = new StringBuffer();
             Multipart mp = (Multipart)message.getContent();
             int count = mp.getCount();    // 部件个数
             for(int i=0; i<count; i++) {
@@ -163,7 +157,6 @@ public class MailInfoServiceImpl implements MailInfoService,commLog{
                     sb.append(part.getContent());
                 }
             }
-        }
         return sb.toString();
     }
 }
