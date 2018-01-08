@@ -96,13 +96,13 @@ public class HttpClientService implements commLog{
      * @throws IOException
      */
     public HttpResult doPost(String url,Map<String,String> params) throws UnsupportedEncodingException {
-        HttpHost proxy = new HttpHost("dev-proxy.oa.com", 8080, "http");
-        CloseableHttpClient httpClient = HttpClients.createDefault();//添加代理
+        /*HttpHost proxy = new HttpHost("dev-proxy.oa.com", 8080, "http");
+        CloseableHttpClient httpClient = HttpClients.createDefault();//添加代理*/
         // 创建http POST请求
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
         httpPost.getConfig();
-        httpPost.setConfig(requestConfig.custom().setProxy(proxy).build());
+//        httpPost.setConfig(requestConfig.custom().setProxy(proxy).build());
         if (params != null){
             // 设置2个post参数，一个是scope、一个是q
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();

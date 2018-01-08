@@ -4,7 +4,7 @@ package com.offer.bean;
  * @Author lizhen [v_zhennli@tencent.com]
  * @Date 2018/1/8 11:25
  */
-public class VoiceMsg {
+public class VoiceMsgBean {
     private String name; //名称
     private String year;//年
     private String month;//月
@@ -15,10 +15,10 @@ public class VoiceMsg {
     private String to;//目的地
     private String seat;//席别
 
-    public VoiceMsg() {
+    public VoiceMsgBean() {
     }
 
-    public VoiceMsg(String name, String year, String month, String day, String time, String minute, String go, String to, String seat) {
+    public VoiceMsgBean(String name, String year, String month, String day, String time, String minute, String go, String to, String seat) {
         this.name = name;
         this.year = year;
         this.month = month;

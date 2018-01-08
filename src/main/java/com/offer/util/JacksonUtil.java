@@ -6,6 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +65,23 @@ public class JacksonUtil {
     }
 
     public static <T> Map<String, String> bean2Map1(T bean) {
+           MAPPER.setPropertyNamingStrategy(new PropertyNamingStrategy() {
+            private static final long serialVersionUID = 1L;
+
+            // 反序列化时调用
+            @Override
+            public String nameForSetterMethod(MapperConfig<?> config,
+                                              AnnotatedMethod method, String defaultName) {
+                return method.getName().substring(3);
+            }
+
+            // 序列化时调用
+            @Override
+            public String nameForGetterMethod(MapperConfig<?> config,
+                                              AnnotatedMethod method, String defaultName) {
+                return method.getName().substring(3);
+            }
+        });
         return json2Map1(bean2Json(bean));
     }
 
