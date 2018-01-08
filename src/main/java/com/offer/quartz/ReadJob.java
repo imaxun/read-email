@@ -1,8 +1,7 @@
 package com.offer.quartz;
 
 import com.offer.service.MailInfoService;
-import com.offer.util.JacksonUtil;
-import com.offer.util.Result;
+import com.offer.util.HttpClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -13,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ReadJob {
     @Autowired
     private MailInfoService mailInfoService;
-        public void taskCycle(){
-            Result result = mailInfoService.readMail();
-            String str = JacksonUtil.bean2Json(result.getModel());
-            System.out.println(str);
-            //后续接入智能语音通知
-        }
+
+    @Autowired
+    private HttpClientService httpRequest;
+    public void taskCycle(){
+
+    }
 }

@@ -3,6 +3,7 @@ package com.offer.util;
 import com.alibaba.fastjson.JSONObject;
 import com.offer.util.model.commLog;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
@@ -14,6 +15,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,11 +95,14 @@ public class HttpClientService implements commLog{
      * @return
      * @throws IOException
      */
-    public HttpResult doPost(String url,Map<String,String> params) throws IOException {
+    public HttpResult doPost(String url,Map<String,String> params) throws UnsupportedEncodingException {
+        HttpHost proxy = new HttpHost("dev-proxy.oa.com", 8080, "http");
+        CloseableHttpClient httpClient = HttpClients.createDefault();//添加代理
         // 创建http POST请求
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
         httpPost.getConfig();
+        httpPost.setConfig(requestConfig.custom().setProxy(proxy).build());
         if (params != null){
             // 设置2个post参数，一个是scope、一个是q
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -112,9 +118,13 @@ public class HttpClientService implements commLog{
             // 执行请求
             response = httpClient.execute(httpPost);
             return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(),code));
+        }catch (IOException e){
+                System.out.println("post请求提交失败："+url +"--------"+e.getMessage());
+                logger.error("post请求提交失败："+e.getMessage());
         }finally {
             closeHttp(response);
         }
+        return null;
     }
 
     /**
