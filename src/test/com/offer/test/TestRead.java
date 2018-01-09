@@ -1,8 +1,6 @@
 package com.offer.test;
 
-import com.offer.bean.ConfigInfo;
-import com.offer.bean.MessageBean;
-import com.offer.bean.SendMsgInfo;
+import com.offer.bean.*;
 import com.offer.service.MailInfoService;
 import com.offer.service.sendNoticeService;
 import com.offer.util.HttpClientService;
@@ -16,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,6 +31,9 @@ public class TestRead {
     private SendMsgInfo sendMsgInfo;
 
     @Resource
+    private VoiceMsgInfo voiceMsgInfo;
+
+    @Resource
     private MailInfoService mailInfoService;
 
     @Autowired
@@ -41,6 +41,7 @@ public class TestRead {
 
     @Autowired
     private HttpClientService httpRequest;
+
 
 
     @Test
@@ -112,13 +113,16 @@ public class TestRead {
     @Test
     public void test2() {
         try {
-            String code = URLEncoder.encode("name=谢昌&year=2017&month=1&day=8&Time=14&Minute=50&go=深圳北&to=长沙南&seat=二等座", "utf-8");
+            /*String code = URLEncoder.encode("name=谢昌&year=2017&month=1&day=8&Time=14&Minute=50&go=深圳北&to=长沙南&seat=二等座", "utf-8");
             String url = "https://voice.yunpian.com/v2/voice/tpl_notify.json";
             Map<String, String> params = new HashMap<String, String>();
             params.put("apikey", "a14e165db1a089a45b525bc6f4b4c449");
             params.put("mobile", "18917825365");
             params.put("tpl_id", "2139138");
             params.put("tpl_value", code);
+            voiceMsgBean.setName("李桢");*/
+            HttpResult httpResult =  sendNoticeService.senVoice();
+            System.out.println("-------------"+httpResult.getData());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,12 +137,8 @@ public class TestRead {
             msgbean.setStation("深圳北");
             msgbean.setTerminus("长沙南");
             String json = JacksonUtil.bean2Json(msgbean);
-            /*HttpResult result = sendNoticeService.senMessage(json);
-            System.out.println(result.getData());*/
-            SendMsgInfo sendMsgInfo = new SendMsgInfo();
-            String str  = sendMsgInfo.getSignatureNonce();
-            System.out.println(str);
-
+            HttpResult result = sendNoticeService.senMessage(json);
+            System.out.println(result.getData());
         } catch (Exception e) {
             e.printStackTrace();
         }

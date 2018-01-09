@@ -165,11 +165,11 @@ public class SendMsgInfo implements Serializable {
         this.templateParam = templateParam;
     }
 
-    public static String getSignatureNonce() {
+    public  String getSignatureNonce() {
         return signatureNonce;
     }
 
-    public static void setSignatureNonce(String signatureNonce) {
+    public  void setSignatureNonce(String signatureNonce) {
         SendMsgInfo.signatureNonce = signatureNonce;
     }
 }

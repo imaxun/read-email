@@ -1,5 +1,11 @@
 package com.offer.util;
 
+import sun.misc.BASE64Encoder;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
+
 /**
  * @Author: lizhen
  * @Description:
@@ -7,12 +13,12 @@ package com.offer.util;
  */
 public class MessageUtil {
     public static String specialUrlEncode(String value) throws Exception {
-        return java.net.URLEncoder.encode(value, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
+        return URLEncoder.encode(value, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
     }
     public static String sign(String accessSecret, String stringToSign) throws Exception {
-        javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
-        mac.init(new javax.crypto.spec.SecretKeySpec(accessSecret.getBytes("UTF-8"), "HmacSHA1"));
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(new SecretKeySpec(accessSecret.getBytes("UTF-8"), "HmacSHA1"));
         byte[] signData = mac.doFinal(stringToSign.getBytes("UTF-8"));
-        return new sun.misc.BASE64Encoder().encode(signData);
+        return new BASE64Encoder().encode(signData);
     }
 }

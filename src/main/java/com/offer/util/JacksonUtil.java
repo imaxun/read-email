@@ -65,7 +65,10 @@ public class JacksonUtil {
     }
 
     public static <T> Map<String, String> bean2Map1(T bean) {
-           MAPPER.setPropertyNamingStrategy(new PropertyNamingStrategy() {
+        return json2Map1(bean2Json(bean));
+    }
+    public static <T> Map<String, String> bean2Map2(T bean) {
+        MAPPER.setPropertyNamingStrategy(new PropertyNamingStrategy() {
             private static final long serialVersionUID = 1L;
 
             // 反序列化时调用

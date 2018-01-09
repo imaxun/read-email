@@ -1,6 +1,5 @@
 package com.offer.service;
 
-import com.offer.bean.VoiceMsgBean;
 import com.offer.util.HttpResult;
 
 /**
@@ -11,5 +10,5 @@ import com.offer.util.HttpResult;
 public interface sendNoticeService {
     HttpResult senMessage(String json);
 
-    HttpResult senVoice(VoiceMsgBean bean);
+    HttpResult senVoice();
 }
